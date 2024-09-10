@@ -8,6 +8,8 @@ pygame.init()
 
 # Constants
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+
+
 class COLOURS(Enum):
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
@@ -15,9 +17,12 @@ class COLOURS(Enum):
     YELLOW = (255, 255, 0)
     MAGENTA = (255, 0, 255)
     WHITE = (255, 255, 255)
+
+
 BACKGROUND_COLOUR = (0, 0, 0)
 FONT_SIZE = 40
 RANDOM_DELAY_MIN, RANDOM_DELAY_MAX = 2, 5  # Delay in seconds between 2 to 5
+
 
 class FILES(Enum):
     RED = "./results/red.txt"
@@ -26,6 +31,8 @@ class FILES(Enum):
     YELLOW = "./results/yellow.txt"
     MAGENTA = "./results/magenta.txt"
     WHITE = "./results/white.txt"
+
+
 # Open file for writing
 files = {
     "RED": open(FILES.RED.value, "a"),
@@ -56,6 +63,7 @@ def display_message(text):
         ),
     )
     pygame.display.flip()
+
 
 # Main test function
 def reaction_test():
