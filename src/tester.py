@@ -46,14 +46,16 @@ font = pygame.font.Font(None, FONT_SIZE)
 def display_message(text, refresh=True, y_offset=0):
     if refresh:
         screen.fill(BACKGROUND_COLOUR)
-    message = font.render(text, True, (255, 255, 255))
-    screen.blit(
-        message,
-        (
-            SCREEN_WIDTH // 2 - message.get_width() // 2,
-            SCREEN_HEIGHT // 2 - message.get_height() // 2 + y_offset,
-        ),
-    )
+    lines = text.split("\n")
+    for idx, line in enumerate(lines):
+        message = font.render(line, True, (255, 255, 255))
+        screen.blit(
+            message,
+            (
+                (SCREEN_WIDTH - message.get_width()) // 2,
+                (SCREEN_HEIGHT - message.get_height()) // 2 + idx * 50 + y_offset,
+            ),
+        )
     if refresh:
         pygame.display.flip()
 
@@ -158,7 +160,7 @@ def test_setup():
             if selected_colours[colour_name]:
                 pygame.draw.rect(screen, (0, 255, 0), rect)  # Green for selected
             else:
-                pygame.draw.rect(screen, (255, 0, 0), rect)  # Red for not selected
+                pygame.draw.rect(screen, (0, 0, 0), rect)  # Black for not selected
             # Draw checkbox border
             pygame.draw.rect(screen, (255, 255, 255), rect, 2)
             # Render colour name
@@ -229,7 +231,6 @@ def test_setup():
 
 # Main test function
 def reaction_test(participant_name, selected_colours, num_repetitions):
-    running = True
     reaction_time = None
 
     # Prepare the list of colours to be tested
@@ -248,18 +249,17 @@ def reaction_test(participant_name, selected_colours, num_repetitions):
 
         # Display instructions
         display_message(
-            f"Trial {trial_num}/{len(colours_to_test)}: Press any key when the colour appears"
+            f"Trial {trial_num}/{len(colours_to_test)}: Press any key when the colour appears\nPress RETURN to start, ESC to quit"
         )
+
         waiting_for_start = True
         while waiting_for_start:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        return
                     waiting_for_start = False
                 elif event.type == pygame.QUIT:
-                    running = False
-                    return
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    running = False
                     return
         display_message("Get ready...")
 
@@ -281,13 +281,11 @@ def reaction_test(participant_name, selected_colours, num_repetitions):
         while reacting:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        reacting = False
                     reaction_time = time.time() - start_time
                     reacting = False
                 elif event.type == pygame.QUIT:
-                    running = False
-                    reacting = False
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    running = False
                     reacting = False
 
         # Show reaction time
