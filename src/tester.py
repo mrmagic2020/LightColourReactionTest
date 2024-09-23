@@ -1,3 +1,4 @@
+import os
 import pygame
 import random
 import time
@@ -304,11 +305,6 @@ def reaction_test(participant_name, selected_colours, num_repetitions):
     pygame.time.wait(3000)
 
 
-# Open files for writing
-files = {}
-for colour_name in COLOURS.__members__.keys():
-    files[colour_name] = open(FILES[colour_name].value, "a")
-
 # Run the test setup
 participant_name, selected_colours, num_repetitions = test_setup()
 print(f"Participant name: {participant_name}")
@@ -317,24 +313,33 @@ print(
 )
 print(f"Number of repetitions per colour: {num_repetitions}")
 
+
+# Create a new directory for the result summary named after the participant
+result_dir = f"./results/{participant_name}"
+APPEND_MODE = os.path.isdir(result_dir)
+print(f"Append mode: {APPEND_MODE}")
+os.makedirs(result_dir, exist_ok=True)
+
+
+# Open files for writing
+files = {}
+for colour_name in COLOURS.__members__.keys():
+    if APPEND_MODE:
+        # Append to the file if it already exists
+        files[colour_name] = open(f"{result_dir}/{colour_name}.txt", "a")
+    else:
+        files[colour_name] = open(FILES[colour_name].value, "a")
+
+
 # Run the reaction test
 reaction_test(participant_name, selected_colours, num_repetitions)
 
+# Move the result files to the new directory if not in append mode
+if not APPEND_MODE:
+    import shutil
 
-# Create a new directory for the result summary named after the participant
-import os
-from datetime import datetime
-
-now = datetime.now()
-timestamp = now.strftime("%Y%m%d%H%M%S")
-result_dir = f"./results/{participant_name}_{timestamp}"
-os.makedirs(result_dir)
-
-# Move the result files to the new directory
-import shutil
-
-for colour_name in COLOURS.__members__.keys():
-    shutil.move(FILES[colour_name].value, f"{result_dir}/{colour_name}.txt")
+    for colour_name in COLOURS.__members__.keys():
+        shutil.move(FILES[colour_name].value, f"{result_dir}/{colour_name}.txt")
 
 print(f"Results saved to {result_dir}")
 
@@ -363,13 +368,19 @@ for idx, colour_name in enumerate(COLOURS.__members__.keys(), start=1):
         average_time_str = "N/A"
     summary_data.append((idx, colour_name.capitalize(), sample_size, average_time_str))
 
+
+# Sort the summary according to the average time
+summary_data.sort(key=lambda x: float(x[3]) if x[3] != "N/A" else float("inf"))
+
 # Write the summary table to summary.txt
 with open(summary_file_path, "w") as f:
     # Write headers
     f.write("No. | Colour  | Sample Size | Average Time\n")
     f.write("-------------------------------------------\n")
+    idx = 1
     for data in summary_data:
-        f.write(f"{data[0]:<3} | {data[1]:<7} | {data[2]:<11} | {data[3]}\n")
+        f.write(f"{idx:<3} | {data[1]:<7} | {data[2]:<11} | {data[3]}\n")
+        idx += 1
 
 print(f"Summary saved to {summary_file_path}")
 
