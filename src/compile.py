@@ -5,6 +5,16 @@ import seaborn as sns
 
 
 def read_participant_summaries(results_dir: str) -> pd.DataFrame:
+    """
+    Reads participant summary files from the specified results directory and
+    compiles the data into a pandas DataFrame.
+
+    Args:
+        results_dir (str): The directory containing participant result folders.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the compiled participant data.
+    """
     participant_data = []
 
     # Iterate over each participant's directory in the results folder
@@ -24,7 +34,6 @@ def read_participant_summaries(results_dir: str) -> pd.DataFrame:
                 if line.strip():
                     parts = line.strip().split("|")
                     if len(parts) == 4:
-                        rank = parts[0].strip()
                         colour = parts[1].strip()
                         sample_size = int(parts[2].strip())
                         average_time = float(parts[3].strip())
@@ -48,6 +57,16 @@ def read_participant_summaries(results_dir: str) -> pd.DataFrame:
 
 
 def aggregate_data(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Aggregates the participant data by Colour, computing the overall sample size,
+    average reaction time, and standard deviation.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing participant data.
+
+    Returns:
+        pd.DataFrame: Aggregated DataFrame with computed statistics.
+    """
     # Group by Colour and compute overall average and sample size
     agg_df = (
         df.groupby("Colour")
@@ -80,12 +99,25 @@ def aggregate_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def save_results_table(agg_df: pd.DataFrame, output_path: str):
-    # Save the aggregated data to a CSV file
+    """
+    Saves the aggregated data to a CSV file.
+
+    Args:
+        agg_df (pd.DataFrame): The DataFrame containing the aggregated data.
+        output_path (str): The file path where the CSV file will be saved.
+    """
     agg_df.to_csv(output_path, index=False)
     print(f"Results saved to: {output_path}")
 
 
 def plot_results(agg_df: pd.DataFrame, output_path: str):
+    """
+    Plots the aggregated data as a bar plot with error bars representing standard deviation.
+
+    Args:
+        agg_df (pd.DataFrame): The DataFrame containing the aggregated data.
+        output_path (str): The file path where the plot image will be saved.
+    """
     sns.set_theme(style="whitegrid")
 
     # Create a bar plot with error bars representing standard deviation

@@ -22,7 +22,7 @@ class COLOURS(Enum):
 
 BACKGROUND_COLOUR = (0, 0, 0)
 FONT_SIZE = 40
-RANDOM_DELAY_MIN, RANDOM_DELAY_MAX = 2, 5  # Delay in seconds between 2 to 5
+RANDOM_DELAY_MIN, RANDOM_DELAY_MAX = 2, 5  # Delay in seconds between 2 and 5
 
 
 class FILES(Enum):
@@ -64,9 +64,7 @@ def test_setup():
     # --- Participant Name Input ---
     input_box = pygame.Rect(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2 + 20, 300, 50)
     color_active = pygame.Color("dodgerblue2")
-    color_inactive = pygame.Color("lightskyblue3")
     color = color_active  # Input box is active by default
-    active = True
     name_text = ""
     done = False
 
@@ -230,7 +228,7 @@ def test_setup():
 
 
 # Main test function
-def reaction_test(participant_name, selected_colours, num_repetitions):
+def reaction_test(selected_colours, num_repetitions):
     reaction_time = None
 
     # Prepare the list of colours to be tested
@@ -330,7 +328,7 @@ for colour_name in COLOURS.__members__.keys():
 
 
 # Run the reaction test
-reaction_test(participant_name, selected_colours, num_repetitions)
+reaction_test(selected_colours, num_repetitions)
 
 # Move the result files to the new directory if not in append mode
 if not APPEND_MODE:
